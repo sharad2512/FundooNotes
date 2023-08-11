@@ -16,7 +16,7 @@ class NoteController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'content' => 'required|string',
-            'index'=>'required|string',
+            'index' => 'required|string',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -24,7 +24,7 @@ class NoteController extends Controller
         $note = new Note([
             'title' => $request->title,
             'content' => $request->content,
-            'index'=> $request->index,
+            'index' => $request->index,
         ]);
         if (!auth()->check()) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -57,5 +57,55 @@ class NoteController extends Controller
         }
         $notes = $user->note;
         return response()->json(['Notes' => $notes]);
+    }
+
+
+    //function for edit note 
+    public function editNote(Request $request, $id)
+    {
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthrized'], 401);
+        }
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], 404);
+        }
+        $note = Note::find($id);
+        if (!$note) {
+            return response()->json(['message' => 'Note not fond']);
+        }
+        if ($note->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized to edit this note'], 403);
+        }
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'content' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        $note->update([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+        return response()->json(['message' => 'Note updated successfully']);
+    }
+
+    //function for delete note 
+    public function deleteNote($id)
+    {
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthorized user'], 401);
+        }
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $note = Note::find($id);
+        if (!$note) {
+            return response()->json(['message' => 'Note not found'], 401);
+        }
+        $note->delete();
+        return response()->json(['Message' => 'Note deleted successfully'], 202);
     }
 }

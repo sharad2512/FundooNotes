@@ -93,7 +93,7 @@ class UserController extends Controller
     //    ]);
        $validator = Validator::make($request->all(),[
         'email'=>'required|string|email',
-        'password'=>'required|string|confirmed',
+        'password'=>'required|string',
         // 'token'=>'required'
        ]);
        if ($validator->fails()) {

@@ -26,11 +26,14 @@ Route::post('/user/register', [UserController::class, 'register']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::post('/user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('/user/reset-password', [UserController::class, 'resetPassword']);
-Route::post('/note/create',[NoteController::class,'create']);
-Route::get('/note/getNotes',[NoteController::class,'getNotes']);
+
 //group middleware 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/userDetails', [UserController::class, 'userDetails']);
     Route::post('/user/logout', [UserController::class, 'logout']);
+    Route::post('/note/create', [NoteController::class, 'create']);
+    Route::get('/note/get', [NoteController::class, 'getNotes']);
+    Route::put('/note/edit/{id}', [NoteController::class, 'editNote']);
+    Route::delete('/note/delete/{id}',[NoteController::class,'deleteNote']);
     
 });
