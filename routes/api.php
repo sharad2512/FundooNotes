@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LabelController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ Route::post('/user/register', [UserController::class, 'register']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::post('/user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('/user/reset-password', [UserController::class, 'resetPassword']);
-
+Route::post('/label/create',[LabelController::class,'createLabel']);
 //group middleware 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/userDetails', [UserController::class, 'userDetails']);
@@ -35,5 +36,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/note/get', [NoteController::class, 'getNotes']);
     Route::put('/note/edit/{id}', [NoteController::class, 'editNote']);
     Route::delete('/note/delete/{id}',[NoteController::class,'deleteNote']);
+    
     
 });

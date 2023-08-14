@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Note extends Model
+class Label extends Model
 {
+    protected $fillable = ['id','name','user_id'];
     use HasFactory;
-    protected $fillable = ['title', 'content', 'Userid', 'remainder', 'pinned', 'archieved', 'deleted', 'index'];
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function labels()
+    public function notes()
     {
-        return $this->belongsToMany(Label::class);
+        return $this->belongsToMany(Note::class);
     }
 }
