@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedInteger('index');
             $table->string('title')->nullable();
-            $table->string('content')->nullable();
-            $table->string('remainder')->nullable();
+            $table->text('content')->nullable();
+            $table->unsignedInteger('user_id');
             $table->boolean('pinned')->default(false);
-            $table->boolean('archieved')->default(false);
+            $table->boolean('archived')->default(false);
             $table->boolean('deleted')->default(false);
+            $table->unsignedInteger('index');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
-            $table->foreign('Userid')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

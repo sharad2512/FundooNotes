@@ -94,16 +94,16 @@ class UserController extends Controller
        $validator = Validator::make($request->all(),[
         'email'=>'required|string|email',
         'password'=>'required|string',
-        // 'token'=>'required'
+        'token'=>'required'
        ]);
        if ($validator->fails()) {
           return response()->json($validator->errors());
        }
+      echo Hash::make($request->token);
 
-       $passwordResetTokens = PasswordResetTokens::where('email',$request->email)
-       ->where('token',$request->token)->first();
+       $passwordResetTokens = PasswordResetTokens::where('email',$request->email)->first();
        
-       if (!$passwordResetTokens) {
+       if (!$passwordResetTokens || Hash::check($request->token,$passwordResetTokens->token)) {
         return response()->json(['message'=>'Invalid password reset token'],401);
        }
        
