@@ -108,4 +108,29 @@ class NoteController extends Controller
         $note->delete();
         return response()->json(['Message' => 'Note deleted successfully'], 202);
     }
+
+    //FUNCTION FOR IS_ARCHIVED
+    public function is_archived($id){
+        $note = Note::find($id);
+        if (!$note) {
+            return response()->json(['message' => 'Note not found'], 404);
+        }
+    
+        $note->update(['archived' => !$note->archived]);
+        
+        return response()->json(['message' => 'Note archived successfully'], 200);
+    }
+    //function for pinned notes
+    public function pinnedNote(Request $request, $id)
+    {
+        $note = Note::find($id);
+
+        if (!$note) {
+            return response()->json(['message' => 'Note not found'], 404);
+        }
+
+        $note->update(['pinned' => !$note->pinned]);
+
+        return response()->json(['message' => 'Note pinned/unpinned successfully'], 200);
+    }
 }

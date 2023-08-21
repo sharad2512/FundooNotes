@@ -22,11 +22,16 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+    public function passwordResetToken()
+    {
+        return $this->hasMany(PasswordResetToken ::class);
+    }
     public function note()
     {
         return $this->hasMany(Note::class);
     }
-    public function labels(){
+    public function labels()
+    {
         return $this->hashMany(Label::class);
     }
 

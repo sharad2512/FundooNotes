@@ -37,6 +37,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/note/get', [NoteController::class, 'getNotes']);
     Route::put('/note/edit/{id}', [NoteController::class, 'editNote']);
     Route::delete('/note/delete/{id}',[NoteController::class,'deleteNote']);
+    Route::put('/note/archived/{id}',[NoteController::class,'is_archived']);
+    Route::put('/note/pinned/{id}',[NoteController::class,'pinnedNote']);
 
     Route::post('/label/create',[LabelController::class,'createLabel']);
     Route::post('/addNoteTolabels/{labelsId}/notes/{noteId}',[LabelController::class,'addNoteToLabel']);

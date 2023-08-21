@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PasswordResetToken;
 use App\Models\PasswordResetTokens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -9,7 +10,9 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -67,12 +70,21 @@ class UserController extends Controller
     }
     //forgot-password function 
     public function forgotPassword(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink($request->only('email'));
-
+    { 
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        $user = User::find($request->input('user_id'));
+        $status = Password::sendResetLink(['email' => $user->email]);
         if ($status === Password::RESET_LINK_SENT) {
+            DB::table('password_reset_tokens')
+                ->where('email', $user->email)
+                ->update(['user_id' => $user->id]);
+            // ->update(['user_id '=>$user->id ]);
+
             return response()->json(['message' => 'Password reset link sent to your email'], 200);
         } elseif ($status === Password::INVALID_USER) {
             return response()->json(['message' => 'Invalid email address'], 400);
@@ -85,39 +97,34 @@ class UserController extends Controller
     //Reset password fuction 
     public function resetPassword(Request $request)
     {   //validation for inputs
-        
-    //    $validator1= $request->validate([
-    //     'email'=>'required|string|email',
-    //     'password'=>'required|string|confirmed',
-    //     // 'token'=>'required',
-    //    ]);
-       $validator = Validator::make($request->all(),[
-        'email'=>'required|string|email',
-        'password'=>'required|string',
-        'token'=>'required'
-       ]);
-       if ($validator->fails()) {
-          return response()->json($validator->errors());
-       }
-      echo Hash::make($request->token);
 
-       $passwordResetTokens = PasswordResetTokens::where('email',$request->email)->first();
-       
-       if (!$passwordResetTokens || Hash::check($request->token,$passwordResetTokens->token)) {
-        return response()->json(['message'=>'Invalid password reset token'],401);
-       }
-       
-       $user = User::where('email',$passwordResetTokens->email)->first();
-      
-       if (!$user) {
-        return response()->json(['message'=>'User not found'],404);
-       }
-       
-       $user->password = Hash::make($request->password);
-       $user->save();
-       $passwordResetTokens->delete();
-      
-       return response(['message'=> 'Password reset successfull'],200);
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer',
+            'newPassword' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
 
+        $isValidate = PasswordResetToken::where('user_id', $request->user_id)->first();
+        // ->where('token', PasswordResetToken->token)
+        // ->exists();
+
+        if (!$isValidate) {
+            return response()->json(['message' => 'Invalid password reset token'], 401);
+        }
+        // Find the user by ID
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Update the user's password
+        $user->password = Hash::make($request->newPassword);
+        if ($user->save()) {
+            $isValidate->delete();
+            return response(['message' => 'Password reset successful'], 200);
+        }
     }
 }
