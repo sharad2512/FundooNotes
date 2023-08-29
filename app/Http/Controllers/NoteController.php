@@ -16,7 +16,7 @@ class NoteController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'content' => 'required|string',
-            'index' => 'required|string',
+            // 'index' => 'required|string',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -24,7 +24,7 @@ class NoteController extends Controller
         $note = new Note([
             'title' => $request->title,
             'content' => $request->content,
-            'index' => $request->index,
+            // 'index' => $request->index,
         ]);
         if (!auth()->check()) {
             return response()->json(['error' => 'Unauthorized'], 401);

@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function register(Request $request)
+    public function signUp(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',

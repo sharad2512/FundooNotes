@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-Route::post('/user/register', [UserController::class, 'register']);
+Route::post('/user/signUp', [UserController::class, 'signUp']);
 Route::post('/user/login', [UserController::class, 'login']);
 Route::post('/user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('/user/reset-password', [UserController::class, 'resetPassword']);
